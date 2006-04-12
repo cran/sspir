@@ -6,7 +6,6 @@
 \alias{expit}
 \alias{logit}
 
-
 \title{Internal functions}
 \description{Internal functions not to be called by the user.}
 

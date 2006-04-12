@@ -1,17 +1,14 @@
-\name{mumpsdat}
-\alias{mumpsdat}
+\name{mumps}
+\alias{mumps}
 \docType{data}
 \title{Mumps}
 \description{Monthly registered cases of mumps in New York City, January 1928
 through June 1972.
 }
-\usage{data(mumpsdat)}
+\usage{data(mumps)}
 \format{
-  A data frame with 534 observations on the following 4 variables.
+534 observations 
   \describe{
-    \item{Year}{a numeric vector containing the year of the observations.}
-    \item{month}{a factor taking values "Jan" through "Dec".}
-    \item{mo}{a numeric vector with the month recorded as 1 through 12.}
     \item{mumps}{a numeric vector of registred cases.}
   }
 }

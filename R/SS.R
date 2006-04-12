@@ -2,21 +2,21 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:34:35 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Sun Jan 23 16:03:17 2005
-## Update Count    : 4
+## Last Modified On: Tue Apr 11 16:25:58 2006
+## Update Count    : 18
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
 SS <- function(
                y=NA,
                x=NA,
-               Fmat = function(tt,x,phi) { NA },
-               Gmat = function(tt,x,phi) { NA },
-               Vmat = function(tt,x,phi) { NA },
-               Wmat = function(tt,x,phi) { NA },
-               m0 = 0,
-               C0 = NA,
-               phi = NA
+               Fmat = function(tt,x,phi) { return(matrix(1)) },
+               Gmat = function(tt,x,phi) { return(matrix(1)) },
+               Vmat = function(tt,x,phi) { return(matrix(phi[1])) },
+               Wmat = function(tt,x,phi) { return(matrix(phi[2])) },
+               m0 = matrix(0),
+               C0 = matrix(100),
+               phi = c(1,1)
                ) {
 
   ## Arguments
@@ -45,8 +45,8 @@ SS <- function(
   }
   else
     {
-      n <- dim(y)[2]
-      d <- dim(y)[1]
+      n <- dim(y)[1]
+      d <- dim(y)[2]
       ##    if (length(dim(d))==0) d <- 1
     }
 
@@ -123,7 +123,7 @@ function(x,...) {
     print(x$y)
   else {
     cat("First 10 cols\n")
-    print(x$y[,1:10])
+    print(x$y[1:10,])
   }
   
   cat("phi= (the parametervector)\n")
@@ -178,7 +178,8 @@ function(x,...) {
 function(x,...) {
   ss <- x
   
-  xs <- 1:ss$n
+#  xs <- 1:ss$n
+  xs <- time(ss$y)
 
   plot(xs, ss$y)
   
@@ -226,7 +227,7 @@ function(x,...) {
   printline()
   
   cat("m_1, m_2, m_3 =\n")
-  print(x$m[,1:3])
+  print(x$m[1:3,])
 
   cat("C_1, C_2, C_3 =\n")
   print(x$C[[1]])
@@ -235,3 +236,35 @@ function(x,...) {
   invisible()
 }
 
+"m0" <- function(ssm) UseMethod("m0")
+"C0" <- function(ssm) UseMethod("C0")
+"Fmat" <- function(ssm) UseMethod("Fmat")
+"Gmat" <- function(ssm) UseMethod("Gmat")
+"Vmat" <- function(ssm) UseMethod("Vmat")
+"Wmat" <- function(ssm) UseMethod("Wmat")
+"phi" <- function(ssm) UseMethod("phi")
+
+"m0<-" <- function(ssm,value) UseMethod("m0<-")
+"C0<-" <- function(ssm,value) UseMethod("C0<-")
+"Fmat<-" <- function(ssm,value) UseMethod("Fmat<-")
+"Gmat<-" <- function(ssm,value) UseMethod("Gmat<-")
+"Vmat<-" <- function(ssm,value) UseMethod("Vmat<-")
+"Wmat<-" <- function(ssm,value) UseMethod("Wmat<-")
+"phi<-" <- function(ssm,value) UseMethod("phi<-")
+
+
+m0.SS <- function(ssm) ssm$m0
+C0.SS <- function(ssm) ssm$C0
+Fmat.SS <- function(ssm) ssm$Fmat
+Gmat.SS <- function(ssm) ssm$Gmat
+Vmat.SS <- function(ssm) ssm$Vmat
+Wmat.SS <- function(ssm) ssm$Wmat
+phi.SS <- function(ssm) ssm$phi
+
+"m0<-.SS" <- function(ssm,value) {ssm$m0<-value;return(ssm)}
+"C0<-.SS" <- function(ssm,value) {ssm$C0<-value;return(ssm)}
+"Fmat<-.SS" <- function(ssm,value) {ssm$Fmat<-value;return(ssm)}
+"Gmat<-.SS" <- function(ssm,value) {ssm$Gmat<-value;return(ssm)}
+"Vmat<-.SS" <- function(ssm,value) {ssm$Vmat<-value;return(ssm)}
+"Wmat<-.SS" <- function(ssm,value) {ssm$Wmat<-value;return(ssm)}
+"phi<-.SS" <- function(ssm,value) {ssm$phi<-value;return(ssm)}

@@ -1,11 +1,12 @@
 data(vandrivers)
-time <- vandrivers$time
+#vd.time <- time(vandrivers$y)
 vd <- ssm( y ~ tvar(1) + seatbelt + sumseason(time,12),
-          time=time, family=poisson(link="log"),
-          data=vandrivers)
-vd$ss$phi["(Intercept)"] <- 0.0004945505
-vd$ss$C0 <- diag(13)*1000
-vd <- kfs(vd)
+          family=poisson(link="log"),
+          data=vandrivers,
+          phi = c(1,0.0004945505),
+          C0=diag(13)*1000
+          )
+vd <- getFit(vd)
 
 
 mle <- function(phi.suggest,obj.ext) {
@@ -35,24 +36,23 @@ mle <- function(phi.suggest,obj.ext) {
 
 attach(vandrivers)
 
-time <- 1969+(time-1)/12
-
 #pdf("vandrivers.pdf",width=10,height=6)
 #postscript("vandrivers.pdf",width=10,height=6,horizontal=FALSE)
 par(mfrow=c(1,1))
-plot(time,y,ylim=c(0,20),ylab="Vandrivers killed",xlab="Time")
-lines(time, exp(seatbelt*vd$m[2,] + vd$m[1,]),lwd=2)
+plot(y,ylim=c(0,20),ylab="Vandrivers killed",xlab="Time")
+lines(exp(seatbelt*vd$m[,2] + vd$m[,1]),lwd=2)
 
-sd <- c()
+vd.sd <- c()
 for (i in 1:length(y)) {
   thisone <- vd$C[[i]][1:2,1:2]
-  if (seatbelt[i]==0) { sd <- c(sd,sqrt(thisone[1,1])) }
+  if (seatbelt[i]==0) { vd.sd <- c(vd.sd,sqrt(thisone[1,1])) }
   else
-    sd <- c(sd,sqrt(sum(thisone)))
+    vd.sd <- c(vd.sd,sqrt(sum(thisone)))
 }
 
-lines(time, exp(seatbelt*vd$m[2,] + vd$m[1,]+2*sd),lty=2)
-lines(time, exp(seatbelt*vd$m[2,] + vd$m[1,]-2*sd),lty=2)
+lines(exp(seatbelt*vd$m[,2] + vd$m[,1]+2*vd.sd),lty=2)
+lines(exp(seatbelt*vd$m[,2] + vd$m[,1]-2*vd.sd),lty=2)
 #dev.off()
 
-cat("Reduction of casualties:",100*(1-exp(vd$m[2,1])),"%\n")
+cat("Reduction of casualties:",100*(1-exp(vd$m[1,2])),"%\n")
+detach("vandrivers")

@@ -1,6 +1,7 @@
 \name{kfs}
 \alias{kfs}
 \alias{kfs.ssm}
+\alias{kfs.SS}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{(Iterated extended) Kalman smoother}
 \description{
@@ -19,26 +20,43 @@ kfs(ss, ...)
 \details{
   The function is a wrapper for \code{\link{kfilter}} followed by
   \code{\link{smoother}} in the Gaussian case. For other family types,
-  \code{\link{extended}} is called.
+  \code{\link{extended}} is called. The \code{kfs} function is called by
+  default in the call to \code{\link{ssm} unless the option
+    \code{fit=FALSE} is given.}
 }
 \value{The returned value from either \code{\link{smoother}} (Gaussian
   case) or \code{\link{extended}}.
 }
-\author{Claus Dethlefsen and Søren Lundbye-Christensen.}
+\author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen.}
 \seealso{\code{\link{kfilter}}, \code{\link{smoother}},
   \code{\link{extended}}, \code{\link{ssm}}.}
 \examples{
-data(mumpsdat)
-time <- 1:nrow(mumpsdat)
-m3 <- ssm( mumps ~ -1 + tvar(polytime(time,1)) +
-                  tvar(polytrig(time,12,1)),
-                  family=poisson(link=log),time=time,data=mumpsdat) 
-m3$ss$phi["epsilon"] <- 0
-m3$ss$phi["polytime(time, 1)time0"] <- 0
-m3$ss$phi["polytime(time, 1)time1"] <- 0.0005
-m3$ss$phi["polytrig(time,12,1)"] <- 0.0001
-diag(m3$ss$C0) <- 1
+data(mumps)
+index <- 1:length(mumps)
+phi.start <- c(0,0,0.0005,0.0001)
+m3 <- ssm( mumps ~ -1 + tvar(polytime(index,1)) +
+                  tvar(polytrig(index,12,1)),
+                  family=poisson(link=log),
+                  phi=phi.start, C0 = diag(4),
+                  fit=FALSE
+) 
+
+## The option "fit=FALSE" means that the Kalman Filter/Smoother is not
+## run.
+## At this point you may inspect/change the setup before running 'kfs'
+C0(m3)
+C0(m3) <- 10*diag(4)
+## incorporate possible structural 'jump' at timepoint 10
+Wold <- Wmat(m3)
+Wmat(m3) <- function(tt,x,phi) {
+    W <- Wold(tt,x,phi)
+    if (tt==10) {W[2,2] <- 100*W[2,2]; return(W)}
+    else return(W)
+}
 
 m3.fit <- kfs(m3)
+
+plot(mumps,type='l',ylab='Number of Cases',xlab='')
+lines(exp(m3.fit$m[,1]),type='l',lwd=2)
 }
 \keyword{models}% at least one, from doc/KEYWORDS

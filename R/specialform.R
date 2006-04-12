@@ -2,8 +2,8 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:33:01 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Sun Jan 23 16:04:40 2005
-## Update Count    : 2
+## Last Modified On: Tue Apr 11 11:41:41 2006
+## Update Count    : 3
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
@@ -71,8 +71,8 @@ sumseason <- function(time,period=12) {
   ## terms are zero (or white noise if surrounded by tvar).
 
   ## How to handle time gaps? (force user to insert missing observations)
-  if (!all(diff(time)==diff(time)[1]))
-    warning("Not handling time gaps")
+#  if (!all(diff(time)==diff(time)[1]))
+#    warning("Not handling time gaps")
   
   
   ## G-matrix contribution:

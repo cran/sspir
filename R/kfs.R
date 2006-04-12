@@ -2,8 +2,8 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:31:36 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Tue May 24 17:14:45 2005
-## Update Count    : 22
+## Last Modified On: Tue Apr 11 15:57:25 2006
+## Update Count    : 38
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
@@ -19,7 +19,8 @@ kfs.ssm <- function(ss,...) {
     return(extended(ss$ss))
 }
 
-
+kfs.SS <- function(ss,...) 
+  smoother(kfilter(ss))
 
 "recursion" <-
 function(ss,n) {
@@ -45,25 +46,28 @@ function(ss,n) {
   phi <- ss$phi
   x   <- ss$x
 
-  theta <- matrix(NA,p,n)
-  y     <- matrix(NA,d,n)
-  mu    <- matrix(NA,d,n)
+#  theta <- matrix(NA,p,n)
+#  y     <- matrix(NA,d,n)
+#  mu    <- matrix(NA,d,n)
+  theta <- matrix(NA,n,p)
+  y     <- matrix(NA,n,d)
+  mu    <- matrix(NA,n,d)
 
-  epswrand <- t(mvrnorm(n,rep(0,p),Wmat(1,x,phi)))
-  epsvrand <- t(mvrnorm(n,rep(0,d),Vmat(1,x,phi)))
+  epswrand <- mvrnorm(n,rep(0,p),Wmat(1,x,phi))
+  epsvrand <- mvrnorm(n,rep(0,d),Vmat(1,x,phi))
 
   
-  theta[,1] <- Gmat(1,x,phi) %*% m0 + epswrand[,1]
-  mu[,1]    <- t(Fmat(1,x,phi)) %*% theta[,1]
+  theta[1,] <- Gmat(1,x,phi) %*% m0 + epswrand[1,]
+  mu[1,]    <- t(Fmat(1,x,phi)) %*% theta[1,]
 
-    y[,1]     <-  mu[,1] + epsvrand[,1]
+    y[1,]     <-  mu[1,] + epsvrand[1,]
 #  else
 #      y[,1] <- fam$simY(d,mu[,1],ntotal)
   
   for (tt in 2:n) {
-    theta[,tt] <- Gmat(tt,x,phi) %*% theta[,tt-1] + epswrand[,tt]
-    mu[,tt]    <- t(Fmat(tt,x,phi)) %*% theta[,tt]
-      y[,tt]     <-  mu[,tt] + epsvrand[,tt]
+    theta[tt,] <- Gmat(tt,x,phi) %*% theta[tt-1,] + epswrand[tt,]
+    mu[tt,]    <- t(Fmat(tt,x,phi)) %*% theta[tt,]
+      y[tt,]     <-  mu[tt,] + epsvrand[tt,]
 
   }
   ss$y <- y
@@ -88,7 +92,7 @@ function(y,Fmat,Gmat,Vt,Wt,mx,Cx)
     ## result as the ordinary filter, but be faster if the state vector is
     ## smaller than the obs.vector
     ## the dimension of Q is dxd and the dimension of R is qxq
-    a <- Gmat %*% mx
+    a <- Gmat %*% t(mx)
     R <- Gmat %*% Cx %*% t(Gmat) + Wt
 #    class(R) <- c("Hermitian","matrix") # p.d.
 
@@ -130,11 +134,12 @@ function(ss) {
   ## in our case, F_t = Fmat, G_t = Gmat, V_t = diag(V[,t]),
   ##              W_t = diag(W[,t])
 
-  m <- matrix(NA,ss$p,ss$n)
+#  m <- matrix(NA,ss$p,ss$n)
+  m <- matrix(NA,ss$n,ss$p)
   C <- vector("list",ss$n)
   firststep <-
     filterstep(
-               matrix(ss$y[,1]),        
+               matrix(ss$y[1,]),        
                ss$Fmat(1,ss$x,ss$phi),
                ss$Gmat(1,ss$x,ss$phi),
                ss$Vmat(1,ss$x,ss$phi),
@@ -142,7 +147,7 @@ function(ss) {
                ss$m0,
                ss$C0
                )
-  m[,1] <- firststep$m
+  m[1,] <- firststep$m
   C[[1]]<- firststep$C
   loglik<- firststep$loglikterm
   
@@ -152,19 +157,22 @@ function(ss) {
 #       cat(tt," ", sep="")
       nextstep <-
         filterstep(
-                   matrix(ss$y[,tt]),
+                   matrix(ss$y[tt,]),
                    ss$Fmat(tt,ss$x,ss$phi),
                    ss$Gmat(tt,ss$x,ss$phi),
                    ss$Vmat(tt,ss$x,ss$phi),
                    ss$Wmat(tt,ss$x,ss$phi),
-                   m[,tt-1],
+                   matrix(m[tt-1,],nrow=1),
                    C[[tt-1]]
                    )
-      m[,tt]  <- nextstep$m
+      m[tt,]  <- nextstep$m
       C[[tt]] <- nextstep$C
       loglik  <- loglik + nextstep$loglikterm
-    }        
-  ss$m <- m
+    }
+  if (is.ts(ss$y))
+    ss$m <- ts(m,start(ss$y),end=end(ss$y),frequency=frequency(ss$y))
+  else
+    ss$m <- m
   ss$C <- C
   ss$likelihood <- loglik
 
@@ -198,7 +206,7 @@ function(m,C,Gmatx,Wtx,mx,Cx)
     Rx <- Gmatx %*% C %*% t(Gmatx) + Wtx# Gmatx = G_{t+1}
 #    print(Rx)
     B  <- C %*% t(Gmatx) %*% mysolve( Rx )
-    ms <- m + B%*%(mx - Gmatx %*%m) # mx=ms_{t+1}
+    ms <- t(m) + B%*%(t(mx) - Gmatx %*%t(m)) # mx=ms_{t+1}
     Cs <- C + B%*%(Cx-Rx)%*%t(B)
     list(ms=ms,Cs=Cs)
   }
@@ -275,8 +283,8 @@ function(ss) {
 
     ## run the recursion
 
-  mu <- matrix(NA, d, nobs)
-   mu[,nobs] <- t(ss$Fmat(nobs,ss$x,ss$phi)) %*% m[,nobs]
+  mu <- matrix(NA, nobs, d)
+   mu[nobs,] <- t(ss$Fmat(nobs,ss$x,ss$phi)) %*% m[nobs,]
 
   for (tt in (nobs-1):1)
     {
@@ -284,26 +292,26 @@ function(ss) {
       if (ss$p == 1)
         nextstep <- 
         smootherstep.uni(
-                     m[,tt],
+                     m[tt,],
                      C[[tt]],
                      ss$Gmat(tt+1,ss$x,ss$phi),
                      ss$Wmat(tt+1,ss$x,ss$phi),
-                     m[,tt+1],
+                     m[tt+1,],
                      C[[tt+1]])
 
       else
       nextstep <-
         smootherstep(
-                     m[,tt],
+                     matrix(m[tt,],nrow=1),
                      C[[tt]],
                      ss$Gmat(tt,ss$x,ss$phi),
                      ss$Wmat(tt+1,ss$x,ss$phi),
-                     m[,tt+1],
+                     matrix(m[tt+1,],nrow=1),
                      C[[tt+1]])
                      
-      m[,tt]  <- nextstep$ms
+      m[tt,]  <- nextstep$ms
       C[[tt]] <- nextstep$Cs
-      mu[,tt] <- t(ss$Fmat(tt,ss$x,ss$phi)) %*% m[,tt]
+      mu[tt,] <- t(ss$Fmat(tt,ss$x,ss$phi)) %*% m[tt,]
       }
     ## do the last step
 #  if (ss$p == 1)
@@ -329,7 +337,10 @@ function(ss) {
     
   ss$m0 <- m0
   ss$C0 <- C0
-  ss$m <- m
+  if (is.ts(ss$y))
+    ss$m <- ts(m,start(ss$y),end=end(ss$y),frequency=frequency(ss$y))
+  else
+    ss$m <- m
   ss$C <- C
   ss$mu <- mu
 

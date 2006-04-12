@@ -39,6 +39,17 @@ smoother(ss)
   An object of class \code{\link{SS}} with the components \code{m},
   \code{C}, and \code{mu} updated.
 }
-\author{Claus Dethlefsen and Søren Lundbye-Christensen.}
+\author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen.}
 \seealso{\code{\link{SS}}, \code{\link{kfilter}}}
+\examples{
+data(kurit)
+m1 <- SS(kurit)
+phi(m1) <- c(100,5)
+m0(m1) <- matrix(130)
+C0(m1) <- matrix(400)
+
+m1.s <- smoother(kfilter(m1))
+plot(m1$y)
+lines(m1.s$m,lty=2)
+}
 \keyword{models}% at least one, from doc/KEYWORDS

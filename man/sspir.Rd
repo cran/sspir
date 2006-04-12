@@ -104,6 +104,6 @@
  more links to packages.
   }
 
-\author{Claus Dethlefsen and Søren Lundbye-Christensen.}
+\author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen.}
 \seealso{\code{\link{ssm}}}
 \keyword{models}% at least one, from doc/KEYWORDS

@@ -32,6 +32,17 @@ kfilter(ss)
 \value{An object of class \code{\link{SS}} with the components \code{m},
   \code{C}, and \code{likelihood} updated.
 }
-\author{Claus Dethlefsen and Søren Lundbye-Christensen.}
+\author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen.}
 \seealso{\code{\link{SS}}, \code{\link{smoother}}}
+\examples{
+data(kurit)
+m1 <- SS(kurit)
+phi(m1) <- c(100,5)
+m0(m1) <- matrix(130)
+C0(m1) <- matrix(400)
+
+m1.f <- kfilter(m1)
+plot(m1$y)
+lines(m1.f$m,lty=2)
+}
 \keyword{models}% at least one, from doc/KEYWORDS

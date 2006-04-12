@@ -2,22 +2,50 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:34:41 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Sun Jan 23 16:03:53 2005
-## Update Count    : 8
+## Last Modified On: Wed Apr 12 10:24:04 2006
+## Update Count    : 91
 ## Status          : Unknown, Use with caution!
 ###############################################################################
+
+# source("f:/Research/sspir/sspirdevel/sspir/R/ssm.R")
+
+getFit <- function(ssm) ssm$ss
+
+m0.ssm <- function(ssm) ssm$ss$m0
+C0.ssm <- function(ssm) ssm$ss$C0
+Fmat.ssm <- function(ssm) ssm$ss$Fmat
+Gmat.ssm <- function(ssm) ssm$ss$Gmat
+Vmat.ssm <- function(ssm) ssm$ss$Vmat
+Wmat.ssm <- function(ssm) ssm$ss$Wmat
+phi.ssm <- function(ssm) ssm$ss$phi
+
+"m0<-.ssm" <- function(ssm,value) {ssm$ss$m0<-value;return(ssm)}
+"C0<-.ssm" <- function(ssm,value) {ssm$ss$C0<-value;return(ssm)}
+"Fmat<-.ssm" <- function(ssm,value) {ssm$ss$Fmat<-value;return(ssm)}
+"Gmat<-.ssm" <- function(ssm,value) {ssm$ss$Gmat<-value;return(ssm)}
+"Vmat<-.ssm" <- function(ssm,value) {ssm$ss$Vmat<-value;return(ssm)}
+"Wmat<-.ssm" <- function(ssm,value) {ssm$ss$Wmat<-value;return(ssm)}
+"phi<-.ssm" <- function(ssm,value) {ssm$ss$phi<-value;return(ssm)}
 
 "ssm" <-
   function(formula,
            family=gaussian,
 	   data = list(),
            subset=NULL,
-           time=NULL
+           fit=TRUE,
+           phi=NULL,
+           m0=NULL,
+           C0=NULL,
+           Fmat=NULL,
+           Gmat=NULL,
+           Vmat=NULL,
+           Wmat=NULL
            )
 {
 
   ## ###########################
   ## Helper functions
+
   noTvar <- function(e) {
     ## remove tvar() from formula
     if (is.call(e))
@@ -34,54 +62,36 @@
 
   removeSpace <-  function(string) gsub("[[:space:]]", "", string)
 
-  ## makeSS.R --- 
+  makeSS <-
+    function(x,y,tvar,tvarNames,...) {
+      
+      dt = rep(1,nrow(x))
+      p <- ncol(x)
+      
+      ntvar <- length(unique(tvar[tvar!=0]))
+      phi <- c(1,rep(1,ntvar))
+      names(phi) <- c("epsilon",tvarNames)
+      
+      res <- SS(
+                y=ts(matrix(y,ncol=1),start=start(y),end=end(y),frequency=frequency(y)),
+                x=list(x=x,dt=dt,tvar=tvar),
+                phi = phi,
+                Fmat = function(tt,x,phi) { x$x[tt,] },
+                Gmat = function(tt,x,phi) { diag(p) },
+                Vmat = function(tt,x,phi) { matrix(phi["epsilon"],1,1) },
+                Wmat = function(tt,x,phi) {
+                  W <- matrix(0,p,p)
+                  diag(W)[tvar!=0] <- phi[-1][tvar]
+                  return(W)
+                },
+                C0 = diag(p)*1e6,
+                m0 = matrix(0,1,p)
+                )
 
-"makeSS" <-
-function(x,y,tvar,tvarNames,...) {
-#  printline()
-#  cat("makeSS\n")
-#  cat("x:\n");print(x)
-#  cat("y:\n");print(y)
-#  cat("w:\n");print(w)
-  
-#  cat("tvar:\n");print(tvar)
-  
-#  if (is.null(w)) weights <- FALSE
-#  else warning("Cannot handle weights, yet.\n")
-
-  dt = rep(1,nrow(x))
-  p <- ncol(x)
-
-  ntvar <- length(unique(tvar[tvar!=0]))
-  phi <- c(1,rep(1,ntvar))
-  names(phi) <- c("epsilon",tvarNames)
-  
-  res <- SS(
-            y=matrix(y,nrow=1),
-            x=list(x=x,dt=dt,tvar=tvar),
-            phi = phi,
-            Fmat = function(tt,x,phi) { x$x[tt,] },
-            Gmat = function(tt,x,phi) { diag(p) },
-            Vmat = function(tt,x,phi) { matrix(phi["epsilon"],1,1) },
-            Wmat = function(tt,x,phi) {
-              W <- matrix(0,p,p)
-              diag(W)[tvar!=0] <- phi[-1][tvar]
-              return(W)
-              ## Her skal ganges med dt
-            },
-##            C0 = matrix(var(y)*1e4,p,p),
-            C0 = diag(p)*1e6,
-            m0 = matrix(0,p,1)
-            )
-
-  #list(x,y,w,offset,tvar)
-  return(res)
-}
+      return(res)
+    }
 
 
-  
-  ## ###########################
-  
   
   ## ###########################
   ## Handle the call (close to lm/glm)
@@ -118,10 +128,23 @@ function(x,y,tvar,tvarNames,...) {
   mf$family <- mf$start <- NULL
 #  mf$... <- NULL
   mf$drop.unused.levels <- TRUE
-  mf$time  <- NULL
+  mf$na.action <- "na.pass"
+  mf$fit  <- NULL
+  mf$phi  <- NULL
+  mf$m0  <- NULL
+  mf$C0  <- NULL
+  mf$Fmat  <- NULL
+  mf$Gmat  <- NULL
+  mf$Wmat  <- NULL
+  mf$Vmat  <- NULL
   mf[[1]] <- as.name("model.frame")
   
-  mf <- eval(mf, parent.frame())
+#  mf <- eval(mf, parent.frame())
+#  y <- eval(mf[[2]][[2]],.GlobalEnv)
+ y <- eval(mf[[2]][[2]],data)  
+  time <- time(ts(start=start(y),end=end(y),frequency=frequency(y)))
+  assign("time",time,env=.GlobalEnv)
+  mf <- eval(mf, .GlobalEnv)
   mt <- attr(mf, "terms")
     
 #  na.act <- attr(mf, "na.action")
@@ -134,6 +157,7 @@ function(x,y,tvar,tvarNames,...) {
   }
   
   y <- model.response(mf, "numeric")
+#  y <- ts(y,start=start,end=end,frequency=frequency)
 #  w <- model.weights(mf)
 #  offset <- model.offset(mf)
 
@@ -144,10 +168,6 @@ function(x,y,tvar,tvarNames,...) {
 #    stop("Number of offsets is ", length(offset), ", should equal ", 
 #         NROW(y), " (number of observations)")
 
-  if (missing(time)) {
-    time <- 1:length(y)
-    warning("time set to 1:length(y)\n")
-  }
 
   ## ##############################
   ## create model.matrix
@@ -274,8 +294,8 @@ function(x,y,tvar,tvarNames,...) {
   else {
     ## if binomial, lhs is given as "cbind(y,n-y)"
     if (family$family=="binomial") {
-      ntotal<- y[,1]+y[,2]
-      y <- y[,1]
+      ntotal<- y[1,]+y[2,]
+      y <- y[1,]
     }
     else {
       ntotal <- NA
@@ -321,23 +341,8 @@ function(x,y,tvar,tvarNames,...) {
       z$ss$Gmat <- newG2
     }
 
-#    if (length(pf$terms.notvar)>0&&pf$terms.notvar=="") {
-#        ## model: y~tvar(). Trend model.
-#        z$ss$Wmat <- function(tt,x,phi) { matrix(c(phi[1],0,0,phi[2]),2,2) }
-#        z$ss$Vmat <- function(tt,x,phi) { matrix(phi[3],1,1) }
-#        z$ss$Gmat <- function(tt,x,phi) { matrix(c(1,0,1,1),2,2) }
-#        z$ss$Fmat <- function(tt,x,phi) { matrix(c(1,0),2,1) }
-#        z$ss$phi  <- c(1,1)
-#        z$ss$p    <- 2
-#        z$ss$m0   <- matrix( 0, 2,1)
-#        z$ss$C0   <- diag(2)*1e6
-#      }
-
-    }
+  }
     class(z) <- c("ssm","lm")
-#    if (!is.null(na.act)) 
-#        z$na.action <- na.act
-#    z$offset <- offset
     z$contrasts <- attr(x, "contrasts")
     z$xlevels <- xlev
     z$call <- cl
@@ -345,6 +350,22 @@ function(x,y,tvar,tvarNames,...) {
     z$data  <- data
     z$ss$family <- family
     z$ss$ntotal <- ntotal
-    z
+  if (!is.null(phi)) z$ss$phi[1:length(phi)] <- phi
+  if (!is.null(m0)) z$ss$m0 <- m0
+  if (!is.null(C0)) z$ss$C0 <- C0
+  if (!is.null(Fmat)) z$ss$Fmat <- Fmat
+  if (!is.null(Gmat)) z$ss$Gmat <- Gmat
+  if (!is.null(Vmat)) z$ss$Vmat <- Vmat
+  if (!is.null(Wmat)) z$ss$Wmat <- Wmat
+  if (fit) z$ss <- kfs(z)
+  z
+  
 }
 
+"print.ssm" <-
+function(x,...) {
+  print(x$ss$family)
+
+  cat("Approximating SSM below:\n")
+  print(x$ss)
+}
