@@ -2,8 +2,8 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:34:35 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Tue Apr 11 16:25:58 2006
-## Update Count    : 18
+## Last Modified On: Thu Apr 20 13:01:52 2006
+## Update Count    : 19
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
@@ -67,7 +67,7 @@ SS <- function(
   ## m: E[theta|y's]. Without m0.
   ## C: Var[theta|y's]. Without C0.
   ## mu: F^t * theta. Signal
-  ## likelihood: loglikelihood( phi )
+  ## loglik: loglikelihood( phi )
 
   ytilde     <- NA
   iteration  <- 0
@@ -75,9 +75,10 @@ SS <- function(
   C          <- NA
   mu         <- NA
   likelihood <- NA
+  loglik <- NA
 
   ss <- c(ss, list(ytilde=ytilde, iteration=iteration,
-                   m=m,C=C,mu=mu,likelihood=likelihood) )
+                   m=m,C=C,mu=mu,likelihood=likelihood,loglik=loglik) )
   
   class(ss) <- "SS"
   ss
@@ -221,7 +222,7 @@ function(x,...) {
   print(x$mu)
   printline()
   
-  cat("log(Likelihood) =", x$likelihood,"\n")
+  cat("log(Likelihood) =", x$loglik,"\n")
 
   cat("(Note that m0 and C0 has been replaced by E(m0|Y) and E(C0|Y) )\n")
   printline()

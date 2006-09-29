@@ -2,8 +2,8 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:31:36 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Tue Apr 11 15:57:25 2006
-## Update Count    : 38
+## Last Modified On: Thu Apr 20 13:00:25 2006
+## Update Count    : 39
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
@@ -175,6 +175,7 @@ function(ss) {
     ss$m <- m
   ss$C <- C
   ss$likelihood <- loglik
+  ss$loglik <- loglik
 
   ss
 }

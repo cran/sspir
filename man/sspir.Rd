@@ -8,6 +8,11 @@
   (extended) Kalman filter and Kalman smoother for models within
   Gaussian, Poisson and binomial families. To get started, try
   \code{demo(gas)}, \code{demo(vandrivers)} and \code{demo(mumps)}.
+
+  Also, read the paper "C. Dethlefsen and
+  S. Lundbye-Christensen. Formulating state space models in r with focus
+  on longitudinal regression models. Journal of Statistical Software,
+  16(1), 2006." 
 }
 
 \section{What sspir does not include}{

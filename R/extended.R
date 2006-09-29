@@ -2,8 +2,8 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:30:11 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Mon Mar 07 12:38:10 2005
-## Update Count    : 6
+## Last Modified On: Thu Apr 20 13:00:38 2006
+## Update Count    : 7
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
@@ -51,7 +51,7 @@ function(ss,maxiter=50,epsilon=1e-6,debug=FALSE)
     
     iter <- iter + 1
     converged <- conv < epsilon
-    if (debug) cat("(",iter,") log l(",ss$phi,") = ", ss$likelihood,"(conv=",conv,")\n")
+    if (debug) cat("(",iter,") log l(",ss$phi,") = ", ss$loglik,"(conv=",conv,")\n")
   }
 
   ss$iteration <- iter

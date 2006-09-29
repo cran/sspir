@@ -30,7 +30,7 @@ kfilter(ss)
   Also, the log-likelihood is calculated.
 }
 \value{An object of class \code{\link{SS}} with the components \code{m},
-  \code{C}, and \code{likelihood} updated.
+  \code{C}, and \code{loglik} updated.
 }
 \author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen.}
 \seealso{\code{\link{SS}}, \code{\link{smoother}}}

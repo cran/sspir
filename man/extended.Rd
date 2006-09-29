@@ -35,7 +35,7 @@ methods. Oxford University Press.
 
 \value{
   The object \code{ss} with updated components \code{m}, \code{C},
-  \code{likelihood}, \code{iteration}, \code{ytilde}, \code{x$vtilde},
+  \code{loglik}, \code{iteration}, \code{ytilde}, \code{x$vtilde},
   \code{mu}. These describe the approximating Gaussian state space model.
 }
 \author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen.}

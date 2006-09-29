@@ -42,7 +42,7 @@ function(ss,N=1) {
     }
   else
     {
-      a[1,] <- GG %*% m0
+      a[1,] <- GG %*% t(m0)
       R[[1]]<- GG %*% C0 %*% t(GG) + Wmat(1,ss$x,ss$phi)
     }
   for (tt in 2:n) {
@@ -56,7 +56,7 @@ function(ss,N=1) {
   }
     else
       {
-        a[tt,] <- GG %*% m[tt-1,]
+        a[tt,] <- GG %*% t(m[tt-1,])
         R[[tt]]<- GG %*% C[[tt-1]] %*% t(GG) + Wmat(tt,ss$x,ss$phi)
         class(R[[tt]]) <- c("Hermitian","Matrix") # p.d.
       }

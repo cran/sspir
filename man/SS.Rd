@@ -119,7 +119,7 @@ SS(y = NA, x = NA,
     mean of the signal (\eqn{\mu_t=F_t^\top \theta_t}) given all
     observations. This is organised in a \eqn{n \times d} dimensional
     matrix holding \eqn{\mu_t} in rows.} 
-  \item{likelihood}{the log-likelihood value after Kalman filtering.}
+  \item{loglik}{the log-likelihood value after Kalman filtering.}
 }
 
 \author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen}
