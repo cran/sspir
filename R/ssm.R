@@ -2,8 +2,8 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:34:41 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Wed Apr 12 10:24:04 2006
-## Update Count    : 91
+## Last Modified On: Mon Aug 10 15:32:29 2009
+## Update Count    : 92
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
@@ -157,6 +157,7 @@ phi.ssm <- function(ssm) ssm$ss$phi
   }
   
   y <- model.response(mf, "numeric")
+  w <- NULL
 #  y <- ts(y,start=start,end=end,frequency=frequency)
 #  w <- model.weights(mf)
 #  offset <- model.offset(mf)

@@ -1,0 +1,14 @@
+Date: 2009-08-10
+By: Anette Luther Christensen
+Function: EMalgo
+
+Now supports estimation of phi using the EM algorithm.
+
+
+Date: 2009-03-06
+By: Anette Luther Christensen
+Function: SS
+
+Vmat and Wmat may now be constant matrices rather than functions.
+
+

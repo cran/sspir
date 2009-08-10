@@ -2,14 +2,14 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:34:35 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Thu Apr 20 13:01:52 2006
-## Update Count    : 19
+## Last Modified On: Fri Feb 06 08:45:54 2009
+## Update Count    : 23
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
 SS <- function(
                y=NA,
-               x=NA,
+               x=list(x=NA),
                Fmat = function(tt,x,phi) { return(matrix(1)) },
                Gmat = function(tt,x,phi) { return(matrix(1)) },
                Vmat = function(tt,x,phi) { return(matrix(phi[1])) },
@@ -29,7 +29,41 @@ SS <- function(
   ## m0: Starting place for state vector
   ## C0: Variance of m0
   ## phi: parameter-vektor
+  assign(".Last.m", m0, env=.GlobalEnv)  
+  assign(".Last.mtilde", m0, env=.GlobalEnv)  
+  
+  if (class(Vmat)=="matrix" & class(Wmat)=="matrix") {
+  
+  ss <- list(y=y, x=x, Fmat=Fmat, Gmat=Gmat, Vmat=Vmat, Wmat=Wmat, m0=m0, C0=C0, phi=phi)
 
+  if (length(y)==1) {
+    if (is.na(y))
+      n <- NA
+    else n <- 1
+    d <- dim(ss$Fmat(1,ss$x,ss$phi))[2]
+  }
+  else
+    {
+      n <- dim(y)[1]
+      d <- dim(y)[2]
+      ##    if (length(dim(d))==0) d <- 1
+    }
+
+  if ( length(ss$Gmat(1,ss$x,ss$phi))>1) {
+    p <- dim(ss$Gmat(1,ss$x,ss$phi))[1]
+  }
+  else
+    {
+    if ( length(ss$Gmat(1,ss$x,ss$phi)) == 1) p <- 1
+    else
+      p <- NA
+  }
+  
+  ss <- c(ss, list(n=n, d=d, p=p) )
+
+  }
+
+ else {
   ss <- list(y=y, x=x, Fmat=Fmat, Gmat=Gmat, Vmat=Vmat, Wmat=Wmat, m0=m0, C0=C0, phi=phi)
 
   ## the function sets up an SS object with attributes
@@ -79,7 +113,7 @@ SS <- function(
 
   ss <- c(ss, list(ytilde=ytilde, iteration=iteration,
                    m=m,C=C,mu=mu,likelihood=likelihood,loglik=loglik) )
-  
+}
   class(ss) <- "SS"
   ss
 }
@@ -143,20 +177,32 @@ function(x,...) {
   cat("\nF_1^T = \n")
   print(t(x$Fmat(1,x$x,x$phi)))
 
+ if(class(x$Vmat)=="matrix"){
+  cat("\nInitial value of V:\n")
+  print(x$Vmat)
+ }
+  else {
   cat("\nFormula for creating V_t:\n")
   print(x$Vmat)
   cat("\nV_1 = \n")
   print(x$Vmat(1,x$x,x$phi))
+  }
 
   cat("\nFormula for creating G_t:\n")
   print(x$Gmat)
   cat("\nG_1 = \n")
   print(x$Gmat(1,x$x,x$phi))
   
+ if (class(x$Wmat)=="matrix") {
+  cat("\nInitial value of W:\n")
+  print(x$Wmat)
+ }
+  else {
   cat("\nFormula for creating W_t:\n")
   print(x$Wmat)
   cat("\nW_1 = \n")
   print(x$Wmat(1,x$x,x$phi))
+  }
 
   cat("\nm0 = \n")
   print(x$m0)

@@ -21,8 +21,8 @@ kfs(ss, ...)
   The function is a wrapper for \code{\link{kfilter}} followed by
   \code{\link{smoother}} in the Gaussian case. For other family types,
   \code{\link{extended}} is called. The \code{kfs} function is called by
-  default in the call to \code{\link{ssm} unless the option
-    \code{fit=FALSE} is given.}
+  default in the call to \code{\link{ssm}} unless the option
+    \code{fit=FALSE} is given.
 }
 \value{The returned value from either \code{\link{smoother}} (Gaussian
   case) or \code{\link{extended}}.

@@ -18,7 +18,7 @@ recursion(ss, n)
 }
 \value{The object \code{ss} with updated components \code{y}, \code{mu}
   and \code{truetheta}.}
-}
+
 \author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen.}
 \seealso{\code{\link{ssm}}, \code{\link{kfilter}},
   \code{\link{smoother}}, \code{\link{getFamily}}.}

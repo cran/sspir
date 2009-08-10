@@ -24,7 +24,7 @@
   Creates an SS-object describing a Gaussian state space model.
 }
 \usage{
-SS(y = NA, x = NA,
+SS(y = NA, x = list(x = NA),
    Fmat = function(tt,x,phi) { return(matrix(1)) },
    Gmat = function(tt,x,phi) { return(matrix(1)) },
    Vmat = function(tt,x,phi) { return(matrix(phi[1])) },
@@ -65,10 +65,12 @@ SS(y = NA, x = NA,
     time \code{tt}.}
   \item{Vmat}{a function depending on the parameter-vector \code{phi},
     covariates \code{x} and returns the \eqn{d \times d} (positive definit)
-    variance matrix at time \code{tt}. }
+    variance matrix at time \code{tt}. The matrix \code{Vmat} may be specified 
+    as a constant matrix not depending on \code{phi} coded with \code{matrix}.}
   \item{Wmat}{a function depending on the parameter-vector \code{phi},
     covariates \code{x} and returns the \eqn{p \times p} (positive
-    semidefinite) evolution variance matrix at time \code{tt}.}
+    semidefinite) evolution variance matrix at time \code{tt}. The matrix \code{Wmat} may be specified 
+    as a constant matrix not depending on \code{phi} coded with \code{matrix}.}
   \item{m0}{a \eqn{1 \times p} matrix giving the initial state.}
   \item{C0}{a \eqn{p \times p} variance matrix giving the variance matrix of
     the initial state.}
@@ -122,7 +124,7 @@ SS(y = NA, x = NA,
   \item{loglik}{the log-likelihood value after Kalman filtering.}
 }
 
-\author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen}
+\author{Claus Dethlefsen, \enc{Søren}{Soren} Lundbye-Christensen and Anette Luther Christensen}
 
 \seealso{\code{\link{ssm}} for a glm-like interface of specifying
   models, \code{\link{kfilter}} for Kalman filter and
@@ -132,8 +134,8 @@ data(kurit)  ## West & Harrison, page 40
 m1 <- SS(y=kurit,
          Fmat=function(tt,x,phi) return(matrix(1)),
          Gmat=function(tt,x,phi) return(matrix(1)),
-         Wmat=function(tt,x,phi) return(matrix(5)),
-         Vmat=function(tt,x,phi) return(matrix(100)),
+         Wmat=function(tt,x,phi) return(matrix(5)), ## Alternatively Wmat=matrix(5)
+         Vmat=function(tt,x,phi) return(matrix(100)), ## Alternatively Vmat=matrix(100)
          m0=matrix(130),C0=matrix(400)
          )
 

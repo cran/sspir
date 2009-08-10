@@ -2,8 +2,8 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:29:59 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Fri Jan 21 12:30:05 2005
-## Update Count    : 1
+## Last Modified On: Mon Aug 10 15:31:46 2009
+## Update Count    : 7
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
@@ -12,14 +12,14 @@ function(family) {
   ## family object contains link and family
   if (family$family=="poisson") {
     ## general poisson
-    initV <- function(y) { rep(1,length(y))
-    }
-    initY <- function(y) { res <- log(y);res[y==0] <- -1;res}
-    simY   <- function(n,lambda,...) rpois(n,family$linkinv(lambda))
+    initV <- function(y) { rep(1,length(y)) }
     
+    initY <- function(y) { res <- log(y);res[y==0] <- -1;res}
+    simY   <- function(n,lambda,ntotal,...) rpois(n,family$linkinv(lambda))
+                         
     ## specific poisson-link combination
     if (family$link=="log") {
-      vtilde <- function(lambda,...)  exp(-lambda)	
+      vtilde <- function(lambda,ntotal,...)  exp(-lambda)	
       ytilde <- function(lambda,y,vtilde,...) lambda + vtilde*y - 1
     }
     else stop("Extended Kalman not implemented for ",family$family,family$link," combination")

@@ -2,8 +2,8 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:31:36 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Thu Apr 20 13:00:25 2006
-## Update Count    : 39
+## Last Modified On: Fri Feb 02 20:06:51 2007
+## Update Count    : 41
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
@@ -35,7 +35,7 @@ function(ss,n) {
   p <- ss$p
   d <- ss$d
 
-  m0 <- ss$m0
+  m0 <- t(ss$m0)
   C0 <- ss$C0
 
   Gmat <- ss$Gmat
@@ -53,10 +53,19 @@ function(ss,n) {
   y     <- matrix(NA,n,d)
   mu    <- matrix(NA,n,d)
 
+if(class(Wmat)=="matrix"){ 
+  epswrand <- mvrnorm(n,rep(0,p),Wmat)
+} else{
   epswrand <- mvrnorm(n,rep(0,p),Wmat(1,x,phi))
-  epsvrand <- mvrnorm(n,rep(0,d),Vmat(1,x,phi))
-
+}
   
+
+if(class(Vmat)=="matrix"){
+  epsvrand <- mvrnorm(n,rep(0,d),Vmat)
+} else { 
+epsvrand <- mvrnorm(n,rep(0,d),Vmat(1,x,phi))
+}
+ 
   theta[1,] <- Gmat(1,x,phi) %*% m0 + epswrand[1,]
   mu[1,]    <- t(Fmat(1,x,phi)) %*% theta[1,]
 
@@ -107,6 +116,7 @@ function(y,Fmat,Gmat,Vt,Wt,mx,Cx)
     if (length(y)>1) loglikterm <-log(dmvnorm(as.numeric(y),as.numeric(f),Q))
     else             loglikterm <- -0.5*( log(2*pi) + log(Q) + (y-f)^2/Q)
 
+    assign(".Last.m", m, env=.GlobalEnv)
   list(m=m,C=C,loglikterm=loglikterm)
   }
 
@@ -137,16 +147,56 @@ function(ss) {
 #  m <- matrix(NA,ss$p,ss$n)
   m <- matrix(NA,ss$n,ss$p)
   C <- vector("list",ss$n)
+if(class(ss$Vmat)=="matrix" & class(ss$Wmat)=="matrix")
+	{
   firststep <-
     filterstep(
                matrix(ss$y[1,]),        
                ss$Fmat(1,ss$x,ss$phi),
                ss$Gmat(1,ss$x,ss$phi),
-               ss$Vmat(1,ss$x,ss$phi),
+               ss$Vmat,
+               ss$Wmat,
+               ss$m0,
+               ss$C0
+               )
+	} else {  if(class(ss$Vmat)=="matrix" & class(ss$Wmat)!="matrix")
+	           {
+              firststep <-
+              filterstep(
+               matrix(ss$y[1,]),        
+               ss$Fmat(1,ss$x,ss$phi),
+               ss$Gmat(1,ss$x,ss$phi),
+               ss$Vmat,
                ss$Wmat(1,ss$x,ss$phi),
                ss$m0,
                ss$C0
                )
+	           } else {  if(class(ss$Vmat)!="matrix" & class(ss$Wmat)=="matrix")
+	                     {
+                         firststep <-
+                            filterstep(
+                                matrix(ss$y[1,]),        
+                                ss$Fmat(1,ss$x,ss$phi),
+                                ss$Gmat(1,ss$x,ss$phi),
+                                ss$Vmat(1,ss$x,ss$phi),
+                                ss$Wmat,
+                                ss$m0,
+                                ss$C0
+                                )
+	                     } else {
+                                firststep <-
+                                  filterstep(
+                                  matrix(ss$y[1,]),        
+                                  ss$Fmat(1,ss$x,ss$phi),
+                                  ss$Gmat(1,ss$x,ss$phi),
+                                  ss$Vmat(1,ss$x,ss$phi),
+                                  ss$Wmat(1,ss$x,ss$phi),
+                                  ss$m0,
+                                  ss$C0
+                                  )
+	                             }
+                    }
+            }
   m[1,] <- firststep$m
   C[[1]]<- firststep$C
   loglik<- firststep$loglikterm
@@ -155,16 +205,57 @@ function(ss) {
   for (tt in 2:ss$n)
     {
 #       cat(tt," ", sep="")
+if(class(ss$Vmat)=="matrix" & class(ss$Wmat)=="matrix")
+	{
       nextstep <-
         filterstep(
                    matrix(ss$y[tt,]),
                    ss$Fmat(tt,ss$x,ss$phi),
                    ss$Gmat(tt,ss$x,ss$phi),
-                   ss$Vmat(tt,ss$x,ss$phi),
+                   ss$Vmat,
+                   ss$Wmat,
+                   matrix(m[tt-1,],nrow=1),
+                   C[[tt-1]]
+                   )
+	}	else { if(class(ss$Vmat)=="matrix" & class(ss$Wmat)!="matrix")
+	           {
+              nextstep <-
+                filterstep(
+                   matrix(ss$y[tt,]),
+                   ss$Fmat(tt,ss$x,ss$phi),
+                   ss$Gmat(tt,ss$x,ss$phi),
+                   ss$Vmat,
                    ss$Wmat(tt,ss$x,ss$phi),
                    matrix(m[tt-1,],nrow=1),
                    C[[tt-1]]
                    )
+              } else { if(class(ss$Vmat)!="matrix" & class(ss$Wmat)=="matrix")
+	                     {
+                          nextstep <-
+                              filterstep(
+                                  matrix(ss$y[tt,]),
+                                  ss$Fmat(tt,ss$x,ss$phi),
+                                  ss$Gmat(tt,ss$x,ss$phi),
+                                  ss$Vmat(tt,ss$x,ss$phi),
+                                  ss$Wmat,
+                                  matrix(m[tt-1,],nrow=1),
+                                  C[[tt-1]]
+                                  ) 
+                        } else {           
+                                nextstep <-
+                                  filterstep(
+                                    matrix(ss$y[tt,]),
+                                    ss$Fmat(tt,ss$x,ss$phi),
+                                    ss$Gmat(tt,ss$x,ss$phi),
+                                    ss$Vmat(tt,ss$x,ss$phi),
+                                    ss$Wmat(tt,ss$x,ss$phi),
+                                    matrix(m[tt-1,],nrow=1),
+                                    C[[tt-1]]
+                                    )
+	                             }
+	                 }
+	       }
+	
       m[tt,]  <- nextstep$m
       C[[tt]] <- nextstep$C
       loglik  <- loglik + nextstep$loglikterm
@@ -206,9 +297,11 @@ function(m,C,Gmatx,Wtx,mx,Cx)
   {
     Rx <- Gmatx %*% C %*% t(Gmatx) + Wtx# Gmatx = G_{t+1}
 #    print(Rx)
-    B  <- C %*% t(Gmatx) %*% mysolve( Rx )
-    ms <- t(m) + B%*%(t(mx) - Gmatx %*%t(m)) # mx=ms_{t+1}
+Rx <- (Rx + t(Rx))/2
+    B  <- C %*% t(Gmatx) %*% solve( Rx )
+    ms <- t(m) + B%*%(t(mx) - Gmatx %*% t(m)) # mx=ms_{t+1}
     Cs <- C + B%*%(Cx-Rx)%*%t(B)
+    assign(".Last.mtilde", m, env=.GlobalEnv)
     list(ms=ms,Cs=Cs)
   }
 
@@ -217,8 +310,9 @@ function(m,C,Gmatx,Wtx,mx,Cx)
   {
     Rx <- Gmatx * C * Gmatx + Wtx# Gmatx = G_{t+1}
     B  <- C * Gmatx / Rx
-    ms <- m + B*(mx - Gmatx *m) # mx=ms_{t+1}
+    ms <- m + B*(mx - Gmatx * m) # mx=ms_{t+1}
     Cs <- C + B*(Cx-Rx)*B
+    assign(".Last.mtilde", m, env=.GlobalEnv)
     list(ms=ms,Cs=Cs)
   }
 
@@ -226,6 +320,11 @@ function(m,C,Gmatx,Wtx,mx,Cx)
 
 "smoother.SS" <-
 function(ss) {
+
+  mf <- ss$m
+  Cf <- ss$C
+  m0f<- ss$m0
+  C0f<- ss$C0
   
   m <- ss$m
   C <- ss$C
@@ -290,6 +389,29 @@ function(ss) {
   for (tt in (nobs-1):1)
     {
 #      cat(tt," ",sep="")
+if(class(ss$Wmat)=="matrix")
+	{
+      if (ss$p == 1)
+        nextstep <- 
+        smootherstep.uni(
+                     m[tt,],
+                     C[[tt]],
+                     ss$Gmat(tt+1,ss$x,ss$phi),
+                     ss$Wmat,
+                     m[tt+1,],
+                     C[[tt+1]])
+
+      else
+      nextstep <-
+        smootherstep(
+                     matrix(m[tt,],nrow=1),
+                     C[[tt]],
+                     ss$Gmat(tt,ss$x,ss$phi),
+                     ss$Wmat,
+                     matrix(m[tt+1,],nrow=1),
+                     C[[tt+1]])
+	}
+	else {
       if (ss$p == 1)
         nextstep <- 
         smootherstep.uni(
@@ -309,6 +431,7 @@ function(ss) {
                      ss$Wmat(tt+1,ss$x,ss$phi),
                      matrix(m[tt+1,],nrow=1),
                      C[[tt+1]])
+	}
                      
       m[tt,]  <- nextstep$ms
       C[[tt]] <- nextstep$Cs
@@ -344,6 +467,11 @@ function(ss) {
     ss$m <- m
   ss$C <- C
   ss$mu <- mu
+
+  ss$mf <- mf
+  ss$Cf <- Cf
+  ss$m0f<- m0f
+  ss$C0f<- C0f
 
   class(ss) <- c("Smoothed","SS")
   ss
