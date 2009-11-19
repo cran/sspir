@@ -2,8 +2,8 @@
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:31:36 2005
 ## Last Modified By: Claus Dethlefsen
-## Last Modified On: Fri Feb 02 20:06:51 2007
-## Update Count    : 41
+## Last Modified On: Thu Nov 19 08:43:59 2009
+## Update Count    : 42
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
@@ -113,9 +113,12 @@ function(y,Fmat,Gmat,Vt,Wt,mx,Cx)
         m <- a + A%*%e
         C <- R - A%*%Q%*%t(A)
     
-    if (length(y)>1) loglikterm <-log(dmvnorm(as.numeric(y),as.numeric(f),Q))
-    else             loglikterm <- -0.5*( log(2*pi) + log(Q) + (y-f)^2/Q)
+#    if (length(y)>1) loglikterm <-log(dmvnorm(as.numeric(y),as.numeric(f),Q))
+#    else             loglikterm <- -0.5*( log(2*pi) + log(Q) + (y-f)^2/Q)
 
+    if (length(y)>1) loglikterm <- dmvnorm(as.numeric(y),as.numeric(f),Q,log=TRUE)
+    else             loglikterm <- -0.5*( log(2*pi) + log(Q) + (y-f)^2/Q)
+    
     assign(".Last.m", m, env=.GlobalEnv)
   list(m=m,C=C,loglikterm=loglikterm)
   }

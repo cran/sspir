@@ -1,3 +1,41 @@
+Date: 2009-11-19
+By: Claus Dethlefsen
+Function: filterstep (Kalman filter)
+
+Suggestion by Fernando Tusell:
+
+   I have experienced lots of troubles with kfilter returning -Inf as
+   the value of the loglikelihood, and I think I have found the culprit.
+   It will be fairly obvious to you, but if not I may supply a small
+   reproducible example.
+
+   When fitting structural models with variances close to zero (i.e., 
+   near the feasibility boundary) matrix Q in function filterstep may
+   have very small diagonal terms (and very small determinant). Variable
+   logretval in function dmvnorm may become negative with a large value 
+   (in one of my examples, -791.14). Nothing much would happen if you 
+   had invoked it with argument log=TRUE: it would merrily return 
+   -791.14.
+
+   However, you invoke dmvnorm with the default log=FALSE, so it returns
+   exp(-791.14) which is rounded to zero. THEN, you take the log of that
+   (in filterstep) which nastily produces -Inf.
+
+   I think replacing in filterstep,
+
+        loglikterm <- log(dmvnorm(as.numeric(y), as.numeric(f), 
+            Q))
+
+   with
+
+        loglikterm <- dmvnorm(as.numeric(y), as.numeric(f), 
+            Q,log=TRUE))
+
+   would solve the problem (and be faster and more accurate in
+   all cases).
+
+
+
 Date: 2009-08-10
 By: Anette Luther Christensen
 Function: EMalgo
