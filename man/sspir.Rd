@@ -1,5 +1,7 @@
-\name{sspir}
+\name{sspir-package}
+\alias{sspir-package}
 \alias{sspir}
+\docType{package}
 \title{State Space Models in R}
 \description{The main contribution of this package is to give a formula
   language for specifying dynamic generalized linear models. That is, an
@@ -109,6 +111,6 @@
  more links to packages.
   }
 
-\author{Claus Dethlefsen and \enc{Søren}{Soren} Lundbye-Christensen.}
+\author{Claus Dethlefsen, \enc{Søren}{Soren} Lundbye-Christensen and Anette Luther Christensen.}
 \seealso{\code{\link{ssm}}}
 \keyword{models}% at least one, from doc/KEYWORDS

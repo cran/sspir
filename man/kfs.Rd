@@ -39,7 +39,7 @@ m3 <- ssm( mumps ~ -1 + tvar(polytime(index,1)) +
                   family=poisson(link=log),
                   phi=phi.start, C0 = diag(4),
                   fit=FALSE
-) 
+)
 
 ## The option "fit=FALSE" means that the Kalman Filter/Smoother is not
 ## run.

@@ -6,7 +6,7 @@
 \description{
   Draws \eqn{N} samples from the conditional distribution of
   \eqn{\theta_1,\ldots,\theta_n} given \eqn{y_1,\ldots,y_n} in a
-  Gaussian state space model. 
+  Gaussian state space model.
 }
 \usage{
 ksimulate(ss, N = 1)

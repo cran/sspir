@@ -7,32 +7,32 @@
 ## Status          : Unknown, Use with caution!
 ###############################################################################
 
-.First.lib <- function(lib, pkg)
- {
-  if((R.version$major == 1) && (as.numeric(R.version$minor) < 9))
-    packageDescription <- package.description
-  
-  cat("\n")
-  cat("-------------------------------------------------------------\n")
+#.First.lib <- function(lib, pkg)
+# {
+#  if((R.version$major == 1) && (as.numeric(R.version$minor) < 9))
+#    packageDescription <- package.description
+#  
+#  cat("\n")
+#  cat("-------------------------------------------------------------\n")
 #  cat(packageDescription("sspir", lib = lib, field="Title"))
 #  cat("\n")
-  ver  <- packageDescription("sspir", lib = lib, field="Version")
-  maint<- packageDescription("sspir", lib = lib, field="Maintainer")
-  autho<- packageDescription("sspir", lib = lib, field="Author")
-  descr<- packageDescription("sspir", lib = lib, field="Description")
-  built<- packageDescription("sspir", lib = lib, field="Built")
-  URL  <- packageDescription("sspir", lib = lib, field="URL")
-  cat("sspir:",packageDescription("sspir", lib = lib, field="Title"),", version", ver,"\n")
-  cat(descr,"\n")
-#  cat("sspir",descr,", version", ver,"\n")
-#  cat(paste("sspir, version", ver,  "is now loaded\n"))
-  cat("Authors:",autho,"\n")
-  cat("Maintained by",maint,"\n")
-#  cat("Webpage:",URL,"\n")
-  cat("\nBuilt:",built,"\n")
-  cat("-------------------------------------------------------------\n")
-
-  }
+#  ver  <- packageDescription("sspir", lib = lib, field="Version")
+#  maint<- packageDescription("sspir", lib = lib, field="Maintainer")
+#  autho<- packageDescription("sspir", lib = lib, field="Author")
+#  descr<- packageDescription("sspir", lib = lib, field="Description")
+#  built<- packageDescription("sspir", lib = lib, field="Built")
+#  URL  <- packageDescription("sspir", lib = lib, field="URL")
+#  cat("sspir:",packageDescription("sspir", lib = lib, field="Title"),", version", #ver,"\n")
+#  cat(descr,"\n")
+##  cat("sspir",descr,", version", ver,"\n")
+##  cat(paste("sspir, version", ver,  "is now loaded\n"))
+#  cat("Authors:",autho,"\n")
+#  cat("Maintained by",maint,"\n")
+##  cat("Webpage:",URL,"\n")
+#  cat("\nBuilt:",built,"\n")
+#  cat("-------------------------------------------------------------\n")
+#
+#  }
 
 ## printline.R --- 
 ## Author          : Claus Dethlefsen

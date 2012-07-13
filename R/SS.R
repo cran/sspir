@@ -1,4 +1,4 @@
-## SS.R --- 
+## SS.R ---
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:34:35 2005
 ## Last Modified By: Claus Dethlefsen
@@ -29,11 +29,12 @@ SS <- function(
   ## m0: Starting place for state vector
   ## C0: Variance of m0
   ## phi: parameter-vektor
-  assign(".Last.m", m0, env=.GlobalEnv)  
-  assign(".Last.mtilde", m0, env=.GlobalEnv)  
-  
+  ## tvar: vector indicating which matrices are constant (0=constant), according to the sequence Fmat, Gmat, Vmat, Wmat
+  assign(".Last.m", m0, envir=.GlobalEnv)
+  assign(".Last.mtilde", m0, envir=.GlobalEnv)
+
   if (class(Vmat)=="matrix" & class(Wmat)=="matrix") {
-  
+
   ss <- list(y=y, x=x, Fmat=Fmat, Gmat=Gmat, Vmat=Vmat, Wmat=Wmat, m0=m0, C0=C0, phi=phi)
 
   if (length(y)==1) {
@@ -58,7 +59,7 @@ SS <- function(
     else
       p <- NA
   }
-  
+
   ss <- c(ss, list(n=n, d=d, p=p) )
 
   }
@@ -68,7 +69,7 @@ SS <- function(
 
   ## the function sets up an SS object with attributes
   ## n: length of y (if y is given)
-  ## d: dimension of y (if y is given). 
+  ## d: dimension of y (if y is given).
   ## p: dimension of theta
 
   if (length(y)==1) {
@@ -93,10 +94,10 @@ SS <- function(
     else
       p <- NA
   }
-  
+
   ss <- c(ss, list(n=n, d=d, p=p) )
-  
-  ## ytilde: used in extended 
+
+  ## ytilde: used in extended
   ## iteration: Number of iterations in extended
   ## m: E[theta|y's]. Without m0.
   ## C: Var[theta|y's]. Without C0.
@@ -118,7 +119,7 @@ SS <- function(
   ss
 }
 
-## print.SS.R --- 
+## print.SS.R ---
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:33:25 2005
 ## Last Modified By: Claus Dethlefsen
@@ -148,7 +149,7 @@ function(x,...) {
   cat("dim(W_t) =", x$p, "x",x$p,"  (pxp)\n" )
   cat("dim(C_0) =", x$p, "x",x$p,"  (pxp)\n" )
   cat("dim(m_0) =", x$p, "x 1   (px1)\n" )
-  
+
   printline()
 
   cat("The terms:\n")
@@ -160,7 +161,7 @@ function(x,...) {
     cat("First 10 cols\n")
     print(x$y[1:10,])
   }
-  
+
   cat("phi= (the parametervector)\n")
   print(x$phi)
 
@@ -192,7 +193,7 @@ function(x,...) {
   print(x$Gmat)
   cat("\nG_1 = \n")
   print(x$Gmat(1,x$x,x$phi))
-  
+
  if (class(x$Wmat)=="matrix") {
   cat("\nInitial value of W:\n")
   print(x$Wmat)
@@ -209,10 +210,10 @@ function(x,...) {
 
   cat("\nC0 = \n")
   print(x$C0)
-  
+
 }
 
-## plot.SS.R --- 
+## plot.SS.R ---
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:32:43 2005
 ## Last Modified By: Claus Dethlefsen
@@ -224,12 +225,12 @@ function(x,...) {
 "plot.SS" <-
 function(x,...) {
   ss <- x
-  
+
 #  xs <- 1:ss$n
   xs <- time(ss$y)
 
   plot(xs, ss$y)
-  
+
   lines(xs, ss$mu, lty=2)
 
   if (ss$p == 1) {
@@ -242,12 +243,12 @@ function(x,...) {
       points(xs, ss$truetheta,col="dark red",pch=3)
       cat("True theta are marked with dark red crosses\n")
     }
-  
+
 
   invisible()
 }
 
-## print.Smoothed.R --- 
+## print.Smoothed.R ---
 ## Author          : Claus Dethlefsen
 ## Created On      : Fri Jan 21 12:33:17 2005
 ## Last Modified By: Claus Dethlefsen
@@ -267,12 +268,12 @@ function(x,...) {
   cat("Mu = (the signal, F_t^T m_t) \n")
   print(x$mu)
   printline()
-  
+
   cat("log(Likelihood) =", x$loglik,"\n")
 
   cat("(Note that m0 and C0 has been replaced by E(m0|Y) and E(C0|Y) )\n")
   printline()
-  
+
   cat("m_1, m_2, m_3 =\n")
   print(x$m[1:3,])
 

@@ -143,7 +143,7 @@ phi.ssm <- function(ssm) ssm$ss$phi
 #  y <- eval(mf[[2]][[2]],.GlobalEnv)
  y <- eval(mf[[2]][[2]],data)  
   time <- time(ts(start=start(y),end=end(y),frequency=frequency(y)))
-  assign("time",time,env=.GlobalEnv)
+  assign("time",time,envir=.GlobalEnv)
   mf <- eval(mf, .GlobalEnv)
   mt <- attr(mf, "terms")
     

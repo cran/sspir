@@ -9,7 +9,7 @@
 \description{
   Based on the output from \code{\link{kfilter}}, this function runs the
   Kalman smoother to produce the conditional means and variances of the
-  state vectors given all observations. 
+  state vectors given all observations.
 }
 \usage{
 smoother(ss)

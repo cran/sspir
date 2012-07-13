@@ -82,9 +82,9 @@ SS(y = NA, x = list(x = NA),
 }
 \details{
     The state space model is given by
-    \deqn{Y_t     = F_t^T  \theta_t     + v_t, v_t \sim N(0,V_t)}{Y_t     = F_t^T * \theta_t     + v_t, v_t ~ N(0,V_t)}
-    \deqn{\theta_t = G_t   \theta_{t-1} + w_t, w_t \sim N(0,W_t)}{\theta_t = G_t  * \theta_{t-1} + w_t, w_t ~ N(0,W_t)}
-    for \eqn{t=1,...,n}. The matrices \eqn{F_t}, \eqn{G_t}, \eqn{V_t},
+    \deqn{Y_t     = F_t^\top  \theta_t     + v_t, \quad v_t \sim N(0,V_t)}{Y_t     = F_t^T * \theta_t     + v_t, v_t ~ N(0,V_t)}
+    \deqn{\theta_t = G_t   \theta_{t-1} + w_t, \quad w_t \sim N(0,W_t)}{\theta_t = G_t  * \theta_{t-1} + w_t, w_t ~ N(0,W_t)}
+    for \eqn{t=1,\ldots,n}{t=1,...,n}. The matrices \eqn{F_t}, \eqn{G_t}, \eqn{V_t},
     and \eqn{W_t} may depend on a parameter vector \eqn{\phi}.
     The initialization is given as
 \deqn{\theta_0 \sim N(m_0,C_0).}{\theta_0 ~ N(m_0,C_0).}

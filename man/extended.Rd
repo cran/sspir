@@ -10,7 +10,11 @@
   method calculates an approximating Gaussian state space model.
 }
 \usage{
-extended(ss, maxiter = 50, epsilon = 1e-06, debug = FALSE)
+extended( ss,
+          maxiter = 50,
+          epsilon = 1e-06,
+          debug = FALSE
+        )
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -30,7 +34,7 @@ extended(ss, maxiter = 50, epsilon = 1e-06, debug = FALSE)
 
 \references{
 Durbin J, Koopman SJ (2001). Time series analysis by state space
-methods. Oxford University Press. 
+methods. Oxford University Press.
 }
 
 \value{
