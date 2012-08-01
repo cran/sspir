@@ -122,9 +122,9 @@ Wstruc <- function(W){
 
 ## Estimstes variances and covariances of W by use of the EM algorithm
 estimates <- EMalgo(m1, Wstruc=Wstruc)
-estimates$Wmat.est
+estimates$ss$Wmat
 
 ## Plots estimated model
-plot(estimates$model)
+plot(estimates$ss)
 }
 \keyword{models}

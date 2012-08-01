@@ -1,6 +1,7 @@
 pkgname <- "sspir"
 source(file.path(R.home("share"), "R", "examples-header.R"))
 options(warn = 1)
+options(pager = "console")
 library('sspir')
 
 assign(".oldSearch", search(), pos = 'CheckExEnv')
@@ -52,10 +53,10 @@ Wstruc <- function(W){
 
 ## Estimstes variances and covariances of W by use of the EM algorithm
 estimates <- EMalgo(m1, Wstruc=Wstruc)
-estimates$Wmat.est
+estimates$ss$Wmat
 
 ## Plots estimated model
-plot(estimates$model)
+plot(estimates$ss)
 
 
 
@@ -238,6 +239,54 @@ lines( exp(results$m[,1]), lwd=2)
 ## Alternatives:
 ## results2 <- extended(model$ss)
 ## results3 <- kfs(model) ## yields the same
+
+
+
+cleanEx()
+nameEx("forecast")
+### * forecast
+
+flush(stderr()); flush(stdout())
+
+### Name: forecast
+### Title: Forecasts a Gaussian state space model
+### Aliases: forecast
+### Keywords: models
+
+### ** Examples
+
+# Formulates Gaussian state space model
+m1 <- SS(
+     Fmat = function(tt,x,phi){matrix(cos(2*pi*tt/365))},
+     Gmat = function(tt,x,phi){matrix(1)},
+     Wmat = function(tt,x,phi){matrix(phi)},
+     Vmat = function(tt,x,phi){matrix(0.1)},
+     phi  = c(1e-1),
+     m0   = matrix(1),
+     C0   = matrix(100)
+)
+
+# Simulates observations
+set.seed(984375)
+m1 <- recursion(m1, 365)
+plot(m1)
+
+# Fits model
+fit <- kfs(m1)
+plot(fit)
+
+# Change format of variances as these are time-invariant
+fit$Wmat <- matrix(m1$phi)
+fit$Vmat <- matrix(0.1)
+
+# Estimates variances by use of EM algorithm
+est.fit <- EMalgo(fit)
+
+
+# Forecasting
+fcast <- forecast(fit, k=100)
+
+plot(fcast)
 
 
 

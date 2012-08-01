@@ -22,7 +22,7 @@ EMalgo <- function(
         step <- EMstep.sspir(filtered, smoothed, Vstruc = Vstruc, Wstruc = Wstruc)
 	
 	if(ite>1){
-		conv <- (smoothed$loglik - loglike[ite-1])
+		conv <- abs(smoothed$loglik - loglike[ite-1])
 	        }
 
 	V <- step$V
@@ -33,12 +33,8 @@ EMalgo <- function(
 	loglike[ite] <- smoothed$loglik
 	}
 
-Vest <- ss$Vmat
-West <- ss$Wmat
 
-ss$Vmat <- Vini;ss$Wmat <- Wini
-
-list(model=ss,Vmat.est=Vest,Wmat.est=West,loglik=loglike,iterations=ite)
+list(ss=ss,loglik=loglike,iterations=ite)
 }
 
 EMstep.sspir <- function( f,

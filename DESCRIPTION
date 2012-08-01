@@ -1,7 +1,7 @@
 Package: sspir
 Title: State Space Models in R
-Version: 0.2.9
-Date: 2012-07-13
+Version: 0.2.10
+Date: 2012-08-01
 Encoding: latin1
 Author: Claus Dethlefsen, \enc{Søren}{Soren} Lundbye-Christensen and
         Anette Luther Christensen
@@ -10,9 +10,14 @@ Description: A glm-like formula language to define dynamic generalized
         Kalman filtering and smoothing. Estimation of variance matrices
         can be performed using the EM algorithm in case of Gaussian
         models. Read help(sspir) to get started.
-Maintainer: Claus Dethlefsen <cld@rn.dk>
+Maintainer: ORPHANED
 License: GPL (>= 2)
 Depends: R (>= 2.15.1), MASS, mvtnorm, KFAS, Matrix
-Packaged: 2012-07-13 11:44:39 UTC; anette
+Packaged: 2012-08-01 14:07:54 UTC; ajsx
 Repository: CRAN
-Date/Publication: 2012-07-13 12:42:00
+Date/Publication: 2012-08-02 10:04:12
+NeedsCompilation: no
+X-CRAN-Original-Maintainer: Claus Dethlefsen <cld@rn.dk>
+X-CRAN-Comment: This package has been orphaned on 2013-12-20: the
+        maintainer address bounces and mail to other known addresses
+        elicited no response.

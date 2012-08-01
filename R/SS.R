@@ -226,24 +226,55 @@ function(x,...) {
 function(x,...) {
   ss <- x
 
-#  xs <- 1:ss$n
-  xs <- time(ss$y)
 
-  plot(xs, ss$y)
+if (length(ss$k)>0){
+	  xs <- 1:(ss$n+ss$k)
+#  xs <- time(ss$y)
 
-  lines(xs, ss$mu, lty=2)
+  plot(x=xs, y=c(ss$y, rep(NA, ss$k)))
+  lines(x=xs[1:ss$n], y=ss$mu[1:ss$n], lty=2)
+  lines(x=xs[(ss$n):(ss$n+ss$k)], y=ss$mu[(ss$n):(ss$n+ss$k)], lty=2, col="red")
 
-  if (ss$p == 1) {
-    lines(xs, ss$mu - 2*sqrt(unlist(ss$C)), lty=3)
-    lines(xs, ss$mu + 2*sqrt(unlist(ss$C)), lty=3)
+  if (!is.null(ss$Q)) {
+    lines(xs[1:ss$n], ss$mu[1:ss$n] - 2*sqrt(unlist(ss$Q)[1:ss$n]), lty=3)
+    lines(xs[(ss$n):(ss$n+ss$k)], ss$mu[(ss$n):(ss$n+ss$k)] - 2*sqrt(unlist(ss$Q)[(ss$n):(ss$n+ss$k)]), lty=3, col="red")
+    lines(xs[1:ss$n], ss$mu[1:ss$n] + 2*sqrt(unlist(ss$Q)[1:ss$n]), lty=3)
+    lines(xs[(ss$n):(ss$n+ss$k)], ss$mu[(ss$n):(ss$n+ss$k)] + 2*sqrt(unlist(ss$Q)[(ss$n):(ss$n+ss$k)]), lty=3, col="red")
   }
 
   if (length(ss$truetheta)>0 && ss$p == 1)
     {
-      points(xs, ss$truetheta,col="dark red",pch=3)
+      points(xs, c(ss$truetheta, rep(NA, ss$k)), col="dark red",pch=3)
       cat("True theta are marked with dark red crosses\n")
     }
 
+
+
+}else{
+
+
+  xs <- 1:ss$n
+#  xs <- time(ss$y)
+
+  plot(x=xs, y=ss$y)
+
+  lines(x=xs, y=ss$mu, lty=2)
+
+  if (!is.null(ss$Q)) {
+    lines(xs, ss$mu - 2*sqrt(unlist(ss$Q)), lty=3)
+    lines(xs, ss$mu + 2*sqrt(unlist(ss$Q)), lty=3)
+  }
+
+
+  if (length(ss$truetheta)>0 && ss$p == 1)
+    {
+      points(xs, ss$truetheta, col="dark red",pch=3)
+      cat("True theta are marked with dark red crosses\n")
+    }
+
+
+
+}
 
   invisible()
 }

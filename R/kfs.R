@@ -123,7 +123,7 @@ function(y,Fmat,Gmat,Vt,Wt,mx,Cx)
     #}
 
     assign(".Last.m", m, envir=.GlobalEnv)
-  list(m=m,C=C,loglikterm=loglikterm)
+  list(m=m,C=C,f=f,Q=Q,loglikterm=loglikterm)
   }
 
 
@@ -153,6 +153,8 @@ function(ss) {
 #  m <- matrix(NA,ss$p,ss$n)
   m <- matrix(NA,ss$n,ss$p)
   C <- vector("list",ss$n)
+  f <- matrix(NA,ss$n,ss$d)
+  Q <- vector("list",ss$n)
 if(class(ss$Vmat)=="matrix" & class(ss$Wmat)=="matrix")
 	{
   firststep <-
@@ -205,6 +207,8 @@ if(class(ss$Vmat)=="matrix" & class(ss$Wmat)=="matrix")
             }
   m[1,] <- firststep$m
   C[[1]]<- firststep$C
+  f[1,] <- firststep$f
+  Q[[1]]<- firststep$Q
   loglik<- firststep$loglikterm
 
   ## run the recursion
@@ -264,6 +268,8 @@ if(class(ss$Vmat)=="matrix" & class(ss$Wmat)=="matrix")
 
       m[tt,]  <- nextstep$m
       C[[tt]] <- nextstep$C
+	f[tt,]  <- nextstep$f
+	Q[[tt]] <- nextstep$Q
       loglik  <- loglik + nextstep$loglikterm
     }
   if (is.ts(ss$y))
@@ -271,6 +277,8 @@ if(class(ss$Vmat)=="matrix" & class(ss$Wmat)=="matrix")
   else
     ss$m <- m
   ss$C <- C
+  ss$f <- f
+  ss$Q <- Q
   ss$likelihood <- loglik
   ss$loglik <- loglik
 

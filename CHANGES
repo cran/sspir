@@ -49,4 +49,9 @@ Function: SS
 
 Vmat and Wmat may now be constant matrices rather than functions.
 
+ate: 2012-08-01
+By: Anette Luther Christensen
+Function: forecast
+
+Function performing forecasting.
 
